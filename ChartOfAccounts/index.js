@@ -96,14 +96,43 @@ router.post('/addCompanies', (req, res) => {
 })
 
 
-router.post('/editPayments', (req, res) => {
+router.post('/editCompanys', (req, res) => {
     console.log('Edit Payments Arr')
     console.log(req.body)
 
-    const { _id, recordArr, party } = req.body;
+    const { _id, previous_year, address, op_bal, sales_tax, ntn_no, head_of_ac } = req.body;
     Companies.findOne({ _id: _id }, function (err, data) {
-        data.recordArr = recordArr;
-        data.party = party;
+        data.previous_year = previous_year;
+        data.address = address;
+        data.op_bal = op_bal;
+        data.sales_tax = sales_tax;
+        data.ntn_no = ntn_no;
+        data.head_of_ac = head_of_ac;
+        data.save();
+        res.json(data);
+    });
+})
+
+
+router.post('/editAccounts', (req, res) => {
+    console.log(req.body)
+
+    const { _id, dept } = req.body;
+    Accounts.findOne({ _id: _id }, function (err, data) {
+        data.dept = dept;
+        data.save();
+        res.json(data);
+    });
+})
+
+
+router.post('/editBanks', (req, res) => {
+    console.log(req.body)
+
+    const { _id, bank_name } = req.body;
+    Banks.findOne({ _id: _id }, function (err, data) {
+        // console.log('err', data)
+        data.bank_name = bank_name;
         data.save();
         res.json(data);
     });
