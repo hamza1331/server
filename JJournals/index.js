@@ -121,6 +121,20 @@ router.post('/editJJournals', (req, res) => {
 })
 
 
+router.post('/editJJournal', (req, res) => {
+    console.log('Edit Reciepts Arr')
+    console.log(req.body)
+
+    const { _id, recordArr } = req.body;
+    JJournals.findOne({ _id: _id }, function (err, data) {
+        data.recordArr = recordArr;
+        data.save();
+        res.json(data);
+    });
+})
+
+
+
 router.get('/getJJournalByRoundNo', (req, res) => {
     let record_no = req.query.record_no;
     console.log('params / uprecord_no', record_no)

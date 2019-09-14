@@ -16,15 +16,15 @@ router.get('/getLedger', (req, res) => {
     credit = 0;
     // console.log('st', current_op_bal)
     Payments.find({}).
-        populate("recordArr.payment_mode").exec(function (err, data) {
+        populate("recordArr.payment_mode party").exec(function (err, data) {
             if (err) {
 
                 console.log('Error GetLedger');
             } else {
                 data.forEach(v => {
                     v.recordArr.forEach(i => {
-                        
-                        if (i.payment_mode._id == req.query.id && req.query.edate > v.generatedOn && req.query.sdate < v.generatedOn) {
+                        console.log('v pay',v.party.company_code === req.query.code)
+                        if ((i.payment_mode._id  == req.query.id || v.party.company_code === req.query.code) && req.query.edate > v.generatedOn && req.query.sdate < v.generatedOn) {
                             i.record_type = i.record_type ? i.record_type : 'payment'
                             console.log('ok py')
                             allArr.push({ 'record_no': v.record_no, 'data': i, party_name: v.party_name, date: v.generatedOn, balance: startingBalance, op_bal: current_op_bal })
@@ -37,7 +37,7 @@ router.get('/getLedger', (req, res) => {
                     })
                 })
                 Reciepts.find({}).
-                    populate("recordArr.party").exec(function (err, data) {
+                    populate("recordArr.party payment_mode").exec(function (err, data) {
                         if (err) {
                             console.log('Error GetLedger');
                         } else {
@@ -45,7 +45,7 @@ router.get('/getLedger', (req, res) => {
                                 // if () 
                                 v.recordArr.forEach(i => {
                                     // console.log(req.query.sdate < req.query.edate)
-                                    if (i.party._id == req.query.id && req.query.edate > v.generatedOn && req.query.sdate < v.generatedOn) {
+                                    if ((i.party._id == req.query.id || v.payment_mode.company_code === req.query.code) && req.query.edate > v.generatedOn && req.query.sdate < v.generatedOn) {
 
                                         i.record_type = i.record_type ? i.record_type : 'reciept'
                                         // startingBalance -= parseInt(i.amount);
@@ -75,7 +75,6 @@ router.get('/getLedger', (req, res) => {
 
                                                 if (req.query.id == i.particulars._id && req.query.edate > v.generatedOn && req.query.sdate < v.generatedOn) {
                                                     allArr.push({ 'record_no': v.record_no, 'data': i, party_name: v.party_name, date: v.generatedOn, balance: startingBalance, op_bal: current_op_bal })
-
                                                 }
                                                 else if (req.query.sdate > v.generatedOn && i.particulars._id == req.query.id) {
                                                     if (i.debit !== 0) {
