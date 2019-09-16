@@ -169,5 +169,17 @@ router.get('/getCompanyByCode', (req, res) => {
         });
 })
 
+router.post('/deleteCompany', (req, res) => {
+    const { _id } = req.body;
+    console.log('recorArr', req.body)
+    Companies.findOneAndRemove({ company_code: _id }).then((data) => {
+        console.log('del', data)
+        data.remove()
+        res.json(data);
+    })
+    .catch((err) => {
+        console.log(err)
+    });
+})
 
 module.exports = router;

@@ -44,7 +44,7 @@ router.post('/upload', (req, res, err) => {
 
 router.get('/getPaymentInfo', (req, res) => {
     Info.find({}, 'payment_info').exec(function (err, data) {
-        console.log('data', data)
+        // console.log('data', data)
         res.json(data);
         if (err) {
             //manage error
@@ -72,7 +72,7 @@ router.post('/addInfo', (req, res) => {
 router.post('/addPayments', (req, res) => {
     console.log('Add Payments')
 
-    console.log(req.body, 'pay')
+    // console.log(req.body, 'pay')
     const Payment = new Payments(req.body);
     Info.findByIdAndUpdate("5d6a2eeef7935f12787d9cc6", {
         $inc: {
@@ -103,8 +103,8 @@ router.post('/addPayments', (req, res) => {
 
 router.get('/getPayments', (req, res) => {
     let date = req.query.date;
-    console.log('params / update', date)
-    // let query = 
+    // console.log('params / update', date)
+    // let query =
 
     Payments.find({ date: date }, (err, data) => {
 
@@ -122,7 +122,7 @@ router.get('/getPayments', (req, res) => {
 
 router.post('/addPaymentsArr', (req, res) => {
     const { _id, recordArr } = req.body;
-        console.log('Add Payments Arr', req.body)
+        // console.log('Add Payments Arr', req.body)
 
     Payments.findOne({ _id: _id }, function (err, data) {
         data.recordArr = recordArr;
@@ -137,7 +137,7 @@ router.post('/addPaymentsArr', (req, res) => {
 
 router.post('/editPayments', (req, res) => {
     console.log('Edit Payments Arr')
-    console.log(req.body)
+    // console.log(req.body)
 
     const { _id, recordArr } = req.body;
     Payments.findOne({ _id: _id }, function (err, data) {
@@ -150,12 +150,12 @@ router.post('/editPayments', (req, res) => {
 
 router.get('/getPaymentByRoundNo', (req, res) => {
     let record_no = req.query.record_no;
-    console.log('params / uprecord_no', record_no)
-    // let query = 
+    // console.log('params / uprecord_no', record_no)
+    // let query =
 
     Payments.findOne({ record_no: record_no }, (err, data) => {
 
-        console.log('data', data)
+        // console.log('data', data)
         if (err) {
             //manage error
             return;

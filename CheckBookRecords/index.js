@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+var mongoose = require('mongoose');
 
 const Checks = require('../models/CheckBookRecords')
 
@@ -30,12 +31,17 @@ router.get('/getChecks', (req, res) => {
 })
 
 
-router.get('/editBook', (req, res) => {
-    let {_id , last_used_check} = req.query;
-    Checks.findOne({_id: _id},(data) => {
+router.post('/editBook', (req, res) => {
+
+    let {_id , last_used_check} = req.body;
+
+    Checks.findById(_id,(err, data) => {
+      console.log(data, 'data')
+          if(data) {
             data.last_used_check = last_used_check;
             data.save()
-            res.json(data);
+          }
+          res.json(data);
         }).catch(err => {
             console.log('err', err)
         });
