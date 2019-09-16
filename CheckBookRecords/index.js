@@ -30,4 +30,16 @@ router.get('/getChecks', (req, res) => {
 })
 
 
+router.get('/editBook', (req, res) => {
+    let {_id , last_used_check} = req.query;
+    Checks.findOne({_id: _id},(data) => {
+            data.last_used_check = last_used_check;
+            data.save()
+            res.json(data);
+        }).catch(err => {
+            console.log('err', err)
+        });
+})
+
+
 module.exports = router;
