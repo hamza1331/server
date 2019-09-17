@@ -14,6 +14,9 @@ var ChecksSchema = new Schema({
   },
   last_used_check: {
     type: Number,
+  },
+  used: {
+    type: Boolean
   }
 });
 
