@@ -4,7 +4,9 @@ const Schema = mongoose.Schema;
 
 var ChecksSchema = new Schema({
   bank: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'companies',
+    required: true
   },
   cheque_no_start: {
     type: Number

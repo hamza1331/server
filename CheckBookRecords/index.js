@@ -18,16 +18,14 @@ router.post('/addChecks', (req, res) => {
 
 
 router.get('/getChecks', (req, res) => {
-
-    Checks.find({used: undefined},(err, data) => {
+    Checks.find(req.query.all ? {} :{used: undefined}).
+        populate("bank").exec(function (err, data) {
             if (err) {
                 console.log("error", err)
                 return;
             };
             res.json(data);
-        }).catch(err => {
-            console.log('err', err)
-        });
+        })
 })
 
 

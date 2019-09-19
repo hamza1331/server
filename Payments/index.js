@@ -1,12 +1,6 @@
 const express = require('express');
 const router = express.Router();
 
-// const fs = require('fs');
-// const path = require('path');
-// const formidable = require('formidable');
-
-
-
 const Payments = require('./../models/newPayments')
 const Info = require('./../models/globalInfo')
 
@@ -72,14 +66,12 @@ router.post('/addInfo', (req, res) => {
 router.post('/addPayments', (req, res) => {
     console.log('Add Payments')
 
-    // console.log(req.body, 'pay')
     const Payment = new Payments(req.body);
     Info.findByIdAndUpdate("5d6a2eeef7935f12787d9cc6", {
         $inc: {
             payment_info: 1
         }
     }, (err, data) => {
-        // console.log('inc', err, data)
         Payment.save().then(x => {
             res.json(x);
             req.body.recordArr.map(v => {
@@ -103,14 +95,11 @@ router.post('/addPayments', (req, res) => {
 
 router.get('/getPayments', (req, res) => {
     let date = req.query.date;
-    // console.log('params / update', date)
-    // let query =
 
     Payments.find({ date: date }, (err, data) => {
 
         console.log('data', data)
         if (err) {
-            //manage error
             return;
         };
         res.json(data);
