@@ -11,10 +11,10 @@ router.get('/getLedger', (req, res) => {
 
     var allArr = [];
     startingBalance = req.query.op_bal ? parseInt(req.query.op_bal) : 0;
-    let current_op_bal = startingBalance;
-    debit = 0;
-    credit = 0;
-    ledger = null;
+    let current_op_bal = req.query.op_bal ? parseInt(req.query.op_bal) : 0;
+    let debit = 0;
+    let credit = 0;
+    let ledger = null;
     // console.log('st', current_op_bal)
     Payments.find({}).
         populate("recordArr.payment_mode party").exec(function (err, data) {
@@ -33,7 +33,7 @@ router.get('/getLedger', (req, res) => {
                             allArr.push({ 'record_no': v.record_no, 'data': i, party_name: v.party.head_of_ac, date: v.generatedOn, balance: startingBalance, op_bal: current_op_bal })
                         } else if (req.query.sdate > v.generatedOn && (i.payment_mode._id  == req.query.id || v.party.company_code === req.query.code)) {
                             console.log('re____________', current_op_bal)
-                            credit -= i.amount;
+                            credit += i.amount;
                             current_op_bal -= parseInt(i.amount);
                         }
                     })
@@ -44,17 +44,11 @@ router.get('/getLedger', (req, res) => {
                             console.log('Error GetLedger');
                         } else {
                             data.forEach(v => {
-                                // if ()
                                 v.recordArr.forEach(i => {
-                                    // console.log(req.query.sdate < req.query.edate)
                                     if ((i.party._id == req.query.id || v.payment_mode.company_code === req.query.code) && req.query.edate > v.generatedOn && req.query.sdate < v.generatedOn) {
                                       debit += i.amount;
-                                      ledger = v.payment_mode.head_of_ac
-
                                         i.record_type = i.record_type ? i.record_type : 'reciept'
-                                        // startingBalance -= parseInt(i.amount);
                                         allArr.push({ 'record_no': v.record_no, 'data': i, party_name: v.payment_mode.head_of_ac, date: v.generatedOn, balance: startingBalance, op_bal: current_op_bal })
-                                        // console.log('py1', req.query.sdate > v.generatedOn)
                                     }
                                     if (req.query.sdate > v.generatedOn && (i.party._id == req.query.id || v.payment_mode.company_code === req.query.code)) {
                                         console.log('re__________', current_op_bal)
@@ -72,18 +66,15 @@ router.get('/getLedger', (req, res) => {
                                         data.forEach(v => {
 
                                             v.recordArr.forEach(i => {
-                                                if (i.debit !== 0) {
-                                                    debit += i.debit
-                                                    startingBalance += parseInt(i.debit);
-                                                } else {
-                                                    startingBalance -= parseInt(i.credit);
-                                                    debit -= i.credit
-                                                }
-                                                // console.log('jj', current_op_bal)
-
                                                 if (req.query.id == i.particulars._id && req.query.edate > v.generatedOn && req.query.sdate < v.generatedOn) {
+                                                  if (i.debit !== 0) {
+                                                      debit += i.debit
+                                                      startingBalance += parseInt(i.debit);
+                                                  } else {
+                                                      startingBalance -= parseInt(i.credit);
+                                                      debit -= i.credit
+                                                  }
                                                     allArr.push({ 'record_no': v.record_no, 'data': i, party_name: i.particulars.head_of_ac, date: v.generatedOn, balance: startingBalance, op_bal: current_op_bal })
-                                                    ledger = i.particulars.head_of_ac
                                                 }
                                                 if (req.query.sdate > v.generatedOn && i.particulars._id == req.query.id) {
                                                     if (i.debit !== 0) {
