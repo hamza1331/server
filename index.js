@@ -55,7 +55,7 @@ app.post('/login', function (req, res) {
   if (Boolean(email) && Boolean(pass)) {
     // check email and pass in db
     if (email == 'admin' && pass == 'admin') {
-      // this if contain the db check, if it is true then execute 
+      // this if contain the db check, if it is true then execute
       jwt.sign({ email, pass }, SECRET_KEY, (err, token) => {
         if (err) {
           console.log("!!!!!!!!!", err)
@@ -110,6 +110,8 @@ app.use('/checks', verifyToken, require('./CheckBookRecords/index'))
 app.use('/checksInHand', verifyToken, require('./CheckInHands/index'))
 app.use('/ledger', verifyToken, require('./newLedger/index'))
 app.use('/trial', require('./TrailBalance/index'))
+
+app.use('/yarn',verifyToken, require('./YarnQuality/index'))
 
 app.listen(process.env.PORT || 5000, function () {
   console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
