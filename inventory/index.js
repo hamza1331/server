@@ -4,6 +4,7 @@ var mongoose = require("mongoose");
 const Quality = require("./../models/addQuality");
 const YarnQuality = require("./../models/addyarnQuality");
 const FabricQuality = require("./../models/addFabricQuality");
+const Brand = require("./../models/addBrand");
 const Info = require('./../models/globalInfo')
 
 
@@ -51,6 +52,18 @@ router.post('/editFabricQuality', (req, res) => {
         data.ends = ends;
         data.picks = picks;
         data.width = width;
+        data.save();
+        res.json(data);
+    });
+})
+
+
+
+router.post('/editBrand', (req, res) => {
+    console.log(req.body)
+    const { _id, brand } = req.body;
+    Brand.findOne({ _id: _id }, function (err, data) {
+        data.brand = brand;
         data.save();
         res.json(data);
     });
@@ -123,6 +136,35 @@ router.post("/addQuality", (req, res) => {
       return
     }
   qualities
+    .save()
+    .then(data => {
+      res.json(data);
+    })
+    .catch(err => {
+      console.log("err", err);
+    });
+  });
+});
+
+router.get("/getBrand", (req, res) => {
+  Brand.find({}).exec(function(err, data) {
+    if (err) {
+      console.log("error", err);
+      return;
+    }
+    res.json(data);
+  });
+});
+
+router.post("/addBrand", (req, res) => {
+  const brands = new Brand(req.body);
+  console.log('ok',brands);
+  Brand.findOne({ brand: req.body.brand }, (error, data) => {
+    if (data) {
+      res.json("Quality is already");
+      return
+    }
+  brands
     .save()
     .then(data => {
       res.json(data);
