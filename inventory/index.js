@@ -4,7 +4,7 @@ var mongoose = require("mongoose");
 const Quality = require("./../models/addQuality");
 const YarnQuality = require("./../models/addyarnQuality");
 const FabricQuality = require("./../models/addFabricQuality");
-const Brand = require("./../models/addBrand");
+const Brand = require("./../models/addbrand");
 const Info = require('./../models/globalInfo')
 
 
