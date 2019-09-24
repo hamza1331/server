@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 var mongoose = require("mongoose");
 const Quality = require("./../models/addQuality");
-const YarnQuality = require("./../models/addYarnQuality");
+const YarnQuality = require("./../models/addyarnQuality");
 const FabricQuality = require("./../models/addFabricQuality");
 const Info = require('./../models/globalInfo')
 

@@ -12,7 +12,6 @@ const quality = new mongoose.Schema({
     s_d: {
       type: Number
     },
-    
     generatedOn: {
         type: Number,
         default: new Date().getTime()
