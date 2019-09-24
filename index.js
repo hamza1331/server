@@ -111,7 +111,7 @@ app.use('/checksInHand', verifyToken, require('./CheckInHands/index'))
 app.use('/ledger', verifyToken, require('./newLedger/index'))
 app.use('/trial', require('./TrailBalance/index'))
 
-app.use('/yarn',verifyToken, require('./YarnQuality/index'))
+app.use('/yarn',verifyToken, require('./inventory/index'))
 
 app.listen(process.env.PORT || 5000, function () {
   console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
