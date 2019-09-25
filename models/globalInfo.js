@@ -17,6 +17,10 @@ const globalInfo = new mongoose.Schema({
         type: Number,
         default: 1
     },
+    software_name: {
+      type: String,
+      default: 'Texile Management System'
+    }
 })
 
 const Info = mongoose.model('global_info', globalInfo);
