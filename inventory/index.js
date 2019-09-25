@@ -5,7 +5,49 @@ const Quality = require("./../models/addQuality");
 const YarnQuality = require("./../models/addyarnQuality");
 const FabricQuality = require("./../models/addFabricQuality");
 const Brand = require("./../models/addbrand");
+const Unit = require("./../models/addUnit");
 const Info = require('./../models/globalInfo')
+const YarnIssue = require('./../models/addYarnIssue')
+
+
+router.get('/getYarnIssueByRecordNo', (req, res) => {
+    let record_no = req.query.record_no;
+    console.log('params / uprecord_no', record_no);
+
+    YarnIssue.findOne({ record_no: record_no }, (err, data) => {
+
+        console.log('data', data)
+        if (err) {
+            //manage error
+            return;
+        };
+        res.json(data);
+    })
+
+    console.log('runned')
+})
+
+router.post('/addYarnIssue', (req, res) => {
+    console.log('Add JJournals')
+
+    console.log(req.body)
+    const yarnIssue = new YarnIssue(req.body);
+    Info.findByIdAndUpdate("5d6a2eeef7935f12787d9cc6", {
+        $inc: {
+            yarnIssue_info: 1
+        }
+    }, (err, data) => {
+        console.log('inc', err, data)
+        yarnIssue.save().then(x => {
+            res.json(x);
+        }).catch(err => {
+            console.log('err', err)
+            res.status(500).send('err', err)
+        });
+    })
+
+})
+
 
 
 
@@ -184,5 +226,51 @@ router.get("/getQuality", (req, res) => {
     res.json(data);
   });
 });
+
+
+
+
+
+router.post('/editUnit', (req, res) => {
+    console.log(req.body)
+    const { _id, unit } = req.body;
+    Unit.findOne({ _id: _id }, function (err, data) {
+      console.log(err, data)
+        data.unit = unit;
+        data.save();
+        res.json(data);
+    });
+})
+
+router.get("/getUnit", (req, res) => {
+  Unit.find({}).exec(function(err, data) {
+    if (err) {
+      console.log("error", err);
+      return;
+    }
+    res.json(data);
+  });
+});
+
+router.post("/addUnit", (req, res) => {
+  const units = new Unit(req.body);
+  console.log('ok',units);
+  Unit.findOne({ unit: req.body.unit }, (error, data) => {
+    if (data) {
+      res.json("Unit is already");
+      return
+    }
+  units
+    .save()
+    .then(data => {
+      res.json(data);
+    })
+    .catch(err => {
+      console.log("err", err);
+    });
+  });
+});
+
+
 
 module.exports = router;

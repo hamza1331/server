@@ -13,6 +13,10 @@ const globalInfo = new mongoose.Schema({
         type: Number,
         default: 1
     },
+    yarnIssue_info: {
+        type: Number,
+        default: 1
+    },
 })
 
 const Info = mongoose.model('global_info', globalInfo);
