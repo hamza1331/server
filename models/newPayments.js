@@ -24,6 +24,10 @@ const recordArr = new mongoose.Schema({
     },
     check_id: {
         type: String
+    },
+    slip_no: {
+      type: String,
+      default: ""
     }
 })
 

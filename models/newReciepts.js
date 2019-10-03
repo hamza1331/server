@@ -32,6 +32,10 @@ const recordArr = new mongoose.Schema({
     },
     checkUniqueId: {
         type: Number
+    },
+    deposit_slip_no: {
+      type: String,
+      default: ""
     }
 })
 
