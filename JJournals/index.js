@@ -1,19 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
-// const fs = require('fs');
-// const path = require('path');
-// const formidable = require('formidable');
-
 const JJournals = require('./../models/Addjjournals')
 const Info = require('./../models/globalInfo')
 
 const fileUpload = require('express-fileupload');
-
-// app.use(express.static('public'));
 router.use(fileUpload());
 
 router.get('/getJJournalInfo', (req, res) => {
+    // get cuurent record no for jjournals
     Info.find({}, 'jjournal_info').exec(function (err, data) {
         console.log('data', data)
         res.json(data);
@@ -26,8 +21,8 @@ router.get('/getJJournalInfo', (req, res) => {
 
 
 router.post('/addJJournals', (req, res) => {
-    console.log('Add JJournals')
-
+    // console.log('Add JJournals')
+// add data
     console.log(req.body)
     const JJournal = new JJournals(req.body);
     Info.findByIdAndUpdate("5d6a2eeef7935f12787d9cc6", {
@@ -48,6 +43,7 @@ router.post('/addJJournals', (req, res) => {
 
 
 router.get('/getJJournals', (req, res) => {
+    // gets jjounals
     let date = req.query.date;
     console.log('params / update', date)
     // let query = 
@@ -67,6 +63,7 @@ router.get('/getJJournals', (req, res) => {
 })
 
 router.post('/addJJournalsArr', (req, res) => {
+    // add new row jjournals
     console.log('Add JJournals Arr')
     const { _id, recordArr } = req.body;
     console.log('recorArr', recordArr)
@@ -79,6 +76,7 @@ router.post('/addJJournalsArr', (req, res) => {
 
 
 router.post('/upload', (req, res, err) => {
+    // uploads new files for jjournalss
     let _id = req.query._id;
     console.log('err', err, req.files)
 
@@ -107,7 +105,7 @@ router.post('/upload', (req, res, err) => {
 
 router.post('/editJJournals', (req, res) => {
     console.log('Edit JJournals Arr')
-
+// edits jjournals arr
     const { _id, recordArr, finalDebit, finalCredit } = req.body;
     console.log(req.body.finalCredit, req.body.finalDebit, 'obj')
 
@@ -124,7 +122,7 @@ router.post('/editJJournals', (req, res) => {
 router.post('/editJJournal', (req, res) => {
     console.log('Edit Reciepts Arr')
     console.log(req.body)
-
+// edits jjournlas vouchers
     const { _id, recordArr } = req.body;
     JJournals.findOne({ _id: _id }, function (err, data) {
         data.recordArr = recordArr;
@@ -136,6 +134,7 @@ router.post('/editJJournal', (req, res) => {
 
 
 router.get('/getJJournalByRoundNo', (req, res) => {
+    // get data by round no
     let record_no = req.query.record_no;
     console.log('params / uprecord_no', record_no)
     // let query = 
@@ -155,6 +154,7 @@ router.get('/getJJournalByRoundNo', (req, res) => {
 
 
 router.get('/getJournalById', (req, res) => {
+    // /gets data by _id
     let id = req.query.id;
     console.log('params / uprecord_no', id)
     // let query = 
