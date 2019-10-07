@@ -10,6 +10,7 @@ const ChecksInHands = require('../models/checkInHand')
 router.use(fileUpload());
 
 router.post('/upload', (req, res, err) => {
+    // adds files to public folder
     let _id = req.query._id;
     console.log('err', err, req.files)
 
@@ -37,6 +38,7 @@ router.post('/upload', (req, res, err) => {
 
 
 router.get('/getPaymentInfo', (req, res) => {
+    // get current record no for paymentss
     Info.find({}, 'payment_info').exec(function (err, data) {
         // console.log('data', data)
         res.json(data);
@@ -47,25 +49,9 @@ router.get('/getPaymentInfo', (req, res) => {
 })
 
 
-router.post('/addInfo', (req, res) => {
-    const Infos = new Info({
-        payment_info: 1,
-        reciept_info: 1,
-        jjournal_info: 1
-    });
-    Infos.save().then(x => {
-        res.json(data);
-    }).catch(err => {
-        console.log('err', err)
-        // res.status(500).send('err', err)
-    });
-})
-
-
-
 router.post('/addPayments', (req, res) => {
     console.log('Add Payments')
-
+        // adds new data and increments record nos 
     const Payment = new Payments(req.body);
     Info.findByIdAndUpdate("5d6a2eeef7935f12787d9cc6", {
         $inc: {
@@ -94,6 +80,7 @@ router.post('/addPayments', (req, res) => {
 
 
 router.get('/getPayments', (req, res) => {
+    // get paymentss
     let date = req.query.date;
 
     Payments.find({ date: date }, (err, data) => {
@@ -110,6 +97,7 @@ router.get('/getPayments', (req, res) => {
 
 
 router.post('/addPaymentsArr', (req, res) => {
+    // adds neew rows to voucher
     const { _id, recordArr } = req.body;
         // console.log('Add Payments Arr', req.body)
 
@@ -127,7 +115,7 @@ router.post('/addPaymentsArr', (req, res) => {
 router.post('/editPayments', (req, res) => {
     console.log('Edit Payments Arr')
     // console.log(req.body)
-
+// edits payment form
     const { _id, recordArr } = req.body;
     Payments.findOne({ _id: _id }, function (err, data) {
         data.recordArr = recordArr;
@@ -138,10 +126,8 @@ router.post('/editPayments', (req, res) => {
 
 
 router.get('/getPaymentByRoundNo', (req, res) => {
+    // get data by record nos
     let record_no = req.query.record_no;
-    // console.log('params / uprecord_no', record_no)
-    // let query =
-
     Payments.findOne({ record_no: record_no }, (err, data) => {
 
         // console.log('data', data)
