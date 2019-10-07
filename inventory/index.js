@@ -12,6 +12,7 @@ const BeamIssue = require("./../models/addBeamIssue");
 const AddSizings = require("./../models/addSizing");
 
 router.get("/getSizingInfo", (req, res) => {
+  // sizing current record nos
   Info.find({}, "sizing_info").exec(function(err, data) {
     res.json(data);
     if (err) {
@@ -21,6 +22,7 @@ router.get("/getSizingInfo", (req, res) => {
 });
 
 router.get("/getSizing", (req, res) => {
+  // sizing form datas
   AddSizings.find({}, (err, data) => {
     if (err) {
       return;
@@ -30,6 +32,7 @@ router.get("/getSizing", (req, res) => {
 });
 
 router.post("/editSizing", (req, res) => {
+  // editing size datas
   console.log(req.body);
   const {
     _id,
@@ -65,6 +68,7 @@ router.post("/editSizing", (req, res) => {
 });
 
 router.get("/getSizingByRecordNo", (req, res) => {
+  // gets sizing data by record Nos
   let record_no = req.query.record_no;
   // console.log('params / uprecord_no', record_no);
   AddSizings.findOne({ record_no: record_no }, (err, data) => {
@@ -80,6 +84,7 @@ router.get("/getSizingByRecordNo", (req, res) => {
 });
 
 router.post("/addSizings", (req, res) => {
+  // adds Sizisngs
   console.log(req.body);
   const sizing = new AddSizings(req.body);
   Info.findByIdAndUpdate(
@@ -105,6 +110,7 @@ router.post("/addSizings", (req, res) => {
 });
 
 router.get("/getBeamIssueInfo", (req, res) => {
+  // get beamIssue current record no
   Info.find({}, "beamIssue_info").exec(function(err, data) {
     console.log("data", data);
     res.json(data);
@@ -115,6 +121,7 @@ router.get("/getBeamIssueInfo", (req, res) => {
 });
 
 router.post("/editBeamIssue", (req, res) => {
+  // edits beam Nos
   console.log(req.body);
   const {
     _id,
@@ -144,6 +151,7 @@ router.post("/editBeamIssue", (req, res) => {
 });
 
 router.get("/getBeamIssueByRecordNo", (req, res) => {
+  // gets beam Issue by recordNos
   let record_no = req.query.record_no;
   // console.log('params / uprecord_no', record_no);
 
@@ -160,6 +168,7 @@ router.get("/getBeamIssueByRecordNo", (req, res) => {
 });
 
 router.get("/getBeamIssues", (req, res) => {
+  // gets all beam Issues
   BeamIssue.find({}, (err, data) => {
     console.log("data", data);
     if (err) {
@@ -170,6 +179,7 @@ router.get("/getBeamIssues", (req, res) => {
 });
 
 router.get("/getYarnIssue_outer", (req, res) => {
+  // get beam issue outer items if its typeOuter value is 'warping' for beam issues count
   let arr = [];
   YarnIssue.find({ "outer.typeOuter": "Warping" })
   .populate({path:'outer.count', populate: { path: "quality" }})
@@ -190,6 +200,7 @@ router.get("/getYarnIssue_outer", (req, res) => {
 });
 
 router.post("/addBeamIssue", (req, res) => {
+  // adds beam issue
   console.log(req.body);
   const beamIssue = new BeamIssue(req.body);
   Info.findByIdAndUpdate(
@@ -215,6 +226,7 @@ router.post("/addBeamIssue", (req, res) => {
 });
 
 router.get("/getYarnIssueByRecordNo", (req, res) => {
+  // get yarn Issue by record nos
   let record_no = req.query.record_no;
   console.log("params / uprecord_no", record_no);
 
@@ -231,6 +243,7 @@ router.get("/getYarnIssueByRecordNo", (req, res) => {
 });
 
 router.post("/addYarnIssue", (req, res) => {
+  // adds yarn Issue
   console.log("Add JJournals");
 
   console.log(req.body);
@@ -258,6 +271,7 @@ router.post("/addYarnIssue", (req, res) => {
 });
 
 router.get("/getYarnIssueInfo", (req, res) => {
+  // gets yarn issues current record no
   Info.find({}, "yarnIssue_info").exec(function(err, data) {
     console.log("data", data);
     res.json(data);
@@ -268,6 +282,7 @@ router.get("/getYarnIssueInfo", (req, res) => {
 });
 
 router.post("/addFabricQuality", (req, res) => {
+  // adds fabric quality
   const fabricQuality = new FabricQuality(req.body);
   fabricQuality
     .save()
@@ -280,6 +295,7 @@ router.post("/addFabricQuality", (req, res) => {
 });
 
 router.get("/getFabricQuality", (req, res) => {
+  // gets fabric qualitys
   FabricQuality.find({})
     .populate({ path: "warp_count", populate: { path: "quality" } })
     .populate({ path: "weft_count", populate: { path: "quality" } })
@@ -293,6 +309,7 @@ router.get("/getFabricQuality", (req, res) => {
 });
 
 router.post("/editFabricQuality", (req, res) => {
+  // edits fabric qualitys
   console.log(req.body);
   const { _id, warp_count, weft_count, ends, picks, width } = req.body;
   FabricQuality.findOne({ _id: _id }, function(err, data) {
@@ -307,6 +324,7 @@ router.post("/editFabricQuality", (req, res) => {
 });
 
 router.post("/editBrand", (req, res) => {
+  // edits brands
   console.log(req.body);
   const { _id, brand } = req.body;
   Brand.findOne({ _id: _id }, function(err, data) {
@@ -317,6 +335,7 @@ router.post("/editBrand", (req, res) => {
 });
 
 router.post("/editQuality", (req, res) => {
+  // edits qualitys
   console.log(req.body);
   const { _id, quality } = req.body;
   Quality.findOne({ _id: _id }, function(err, data) {
@@ -327,6 +346,7 @@ router.post("/editQuality", (req, res) => {
 });
 
 router.post("/editYarnQuality", (req, res) => {
+  // edits yarn quality
   console.log(req.body);
   const { _id, yarn_count, s_d } = req.body;
   YarnQuality.findOne({ _id: _id }, function(err, data) {
@@ -337,14 +357,8 @@ router.post("/editYarnQuality", (req, res) => {
 });
 
 router.post("/addYarnQuality", (req, res) => {
+  // add yarn quality
   const qualities = new YarnQuality(req.body);
-  console.log(qualities);
-  // YarnQuality.findOne({ quality: req.body.quality }, (error, data) => {
-  // if (data) {
-  //   res.json("Quality is already");
-  //   return
-  // }
-
   qualities
     .save()
     .then(data => {
@@ -353,10 +367,10 @@ router.post("/addYarnQuality", (req, res) => {
     .catch(err => {
       console.log("err", err);
     });
-  // });
 });
 
 router.get("/getYarnQuality", (req, res) => {
+  // get yarn quality
   YarnQuality.find({})
     .populate("quality")
     .exec(function(err, data) {
@@ -369,8 +383,8 @@ router.get("/getYarnQuality", (req, res) => {
 });
 
 router.post("/addQuality", (req, res) => {
+  // add quality
   const qualities = new Quality(req.body);
-  console.log("ok", qualities);
   Quality.findOne({ quality: req.body.quality }, (error, data) => {
     if (data) {
       res.json("Quality is already");
@@ -388,6 +402,7 @@ router.post("/addQuality", (req, res) => {
 });
 
 router.get("/getBrand", (req, res) => {
+  // get brand qualitys
   Brand.find({}).exec(function(err, data) {
     if (err) {
       console.log("error", err);
@@ -398,8 +413,8 @@ router.get("/getBrand", (req, res) => {
 });
 
 router.post("/addBrand", (req, res) => {
+  // edit brand qualitys
   const brands = new Brand(req.body);
-  console.log("ok", brands);
   Brand.findOne({ brand: req.body.brand }, (error, data) => {
     if (data) {
       res.json("Quality is already");
@@ -417,6 +432,7 @@ router.post("/addBrand", (req, res) => {
 });
 
 router.get("/getQuality", (req, res) => {
+  // get qualitys
   Quality.find({}).exec(function(err, data) {
     if (err) {
       console.log("error", err);
@@ -427,7 +443,8 @@ router.get("/getQuality", (req, res) => {
 });
 
 router.post("/editUnit", (req, res) => {
-  console.log(req.body);
+  // edits unit
+  // console.log(req.body);
   const { _id, unit } = req.body;
   Unit.findOne({ _id: _id }, function(err, data) {
     console.log(err, data);
@@ -438,6 +455,7 @@ router.post("/editUnit", (req, res) => {
 });
 
 router.get("/getUnit", (req, res) => {
+  // get unitss
   Unit.find({}).exec(function(err, data) {
     if (err) {
       console.log("error", err);
@@ -448,6 +466,7 @@ router.get("/getUnit", (req, res) => {
 });
 
 router.post("/addUnit", (req, res) => {
+  // if unit does not exists adds a new ones
   const units = new Unit(req.body);
   console.log("ok", units);
   Unit.findOne({ unit: req.body.unit }, (error, data) => {
