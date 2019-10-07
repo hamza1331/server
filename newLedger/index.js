@@ -7,7 +7,8 @@ const Reciepts = require('./../models/newReciepts')
 const Addjjournals = require('./../models/Addjjournals')
 
 router.get('/getLedger', (req, res) => {
-    console.log('ok', req.query);
+
+    // creates ledger by looping throgh jjounals, recipts and payments 
 
     var allArr = [];
     startingBalance = req.query.op_bal ? parseInt(req.query.op_bal) : 0;
