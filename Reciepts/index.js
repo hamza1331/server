@@ -9,6 +9,7 @@ const fileUpload = require('express-fileupload');
 router.use(fileUpload());
 
 router.post('/upload', (req, res, err) => {
+    // adds file files to public folders
     let _id = req.query._id;
     console.log('err', err, req.files)
 
@@ -34,6 +35,7 @@ router.post('/upload', (req, res, err) => {
 });
 
 router.get('/getRecieptInfo', (req, res) => {
+    // gets cuurrent record no 
     Info.find({}, 'reciept_info').exec(function (err, data) {
         console.log('data', data)
         res.json(data);
@@ -45,6 +47,7 @@ router.get('/getRecieptInfo', (req, res) => {
 
 router.post('/addReciept', (req, res) => {
     console.log('Add Reciept')
+    // add new reciept and increments record no
 
     console.log(req.body)
     req.body.recordArr.map(v => {
@@ -72,6 +75,9 @@ router.post('/addReciept', (req, res) => {
 
 
 router.get('/getReciepts', (req, res) => {
+
+    // get reciept by date
+
     let date = req.query.date;
     console.log('params', date)
     Reciepts.find({ date: date }, (err, data) => {
@@ -88,7 +94,7 @@ router.get('/getReciepts', (req, res) => {
 
 router.post('/addRecieptsArr', (req, res) => {
     console.log('Add Payments Arr')
-
+    // adds new row to reciept vouchcher
     console.log(req.body)
     // const Payment = new Payments(req.body);
     const { _id, recordArr } = req.body;
@@ -105,6 +111,7 @@ router.post('/addRecieptsArr', (req, res) => {
 
 
 router.post('/editReciepts', (req, res) => {
+    // edits reciepts vouchers
     console.log('Edit Reciepts Arr')
     console.log(req.body)
 
@@ -118,12 +125,10 @@ router.post('/editReciepts', (req, res) => {
 
 
 router.get('/getRecieptByRoundNo', (req, res) => {
+    // get reciepts by round nos
     let record_no = req.query.record_no;
-    console.log('params / uprecord_no', record_no)
-    // let query = 
-
+    // console.log('params / uprecord_no', record_no)
     Reciepts.findOne({ record_no: record_no }, (err, data) => {
-
         console.log('data', data)
         if (err) {
             //manage error
@@ -138,6 +143,7 @@ router.get('/getRecieptByRoundNo', (req, res) => {
 
 
 router.get('/getRecieptById', (req, res) => {
+    // get recipts by id
     let id = req.query.id;
     console.log('params / uprecord_no', id)
 
