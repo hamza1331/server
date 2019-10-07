@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-var mongoose = require('mongoose');
 
 const Checks = require('../models/CheckBookRecords')
 
 
 router.post('/addChecks', (req, res) => {
+    // add a new check books
     const Check = new Checks(req.body);
     console.log(Check);
     Check.save().then(data => {
@@ -18,6 +18,7 @@ router.post('/addChecks', (req, res) => {
 
 
 router.get('/getChecks', (req, res) => {
+    // get checks by condition 
     Checks.find(req.query.all ? {} :{used: undefined}).
         populate("bank").exec(function (err, data) {
             if (err) {
@@ -30,7 +31,7 @@ router.get('/getChecks', (req, res) => {
 
 
 router.post('/editBook', (req, res) => {
-
+// edits checks book when used in any forms
     let {_id , last_used_check, cheque_no_end} = req.body;
 
     Checks.findById(_id,(err, data) => {
