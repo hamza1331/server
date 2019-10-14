@@ -24,7 +24,7 @@ router.get("/getSizingDataforBeamIssue", (req, res) => {
     data.map(x => {
       // console.log(x)
           if(x.type === 'Twist' ) {
-            x.count && arr.push({quality: x.count, _id: x._id, type: x.type,ends: x.ends, beamArr: x.beamArr, yarn_issue_id: x.yarn_issue_id});
+            x.count && arr.push({quality: x.count, _id: x._id, type: x.type,ends: x.ends, beamArr: x.beamArr, yarn_issue_id: x.yarn_issue_id, twisted: x.twisted});
           }
       });
     res.json(arr);
@@ -44,8 +44,8 @@ router.get("/getYarnIsue_sizing", (req, res) => {
     }
     data.forEach(v => {
       v.outer.map(x => {
-          if(x.twisted !== undefined) {
-            x.count && arr.push({quality: x.count, _id: v._id, type: x.typeOuter, record_no: v.record_no});
+          if(x.typeOuter === 'Twist') {
+            x.count && arr.push({quality: x.count, _id: v._id, type: x.typeOuter, record_no: v.record_no, twisted: x.twisted});
           }
       });
     });
