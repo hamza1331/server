@@ -10,6 +10,58 @@ const Info = require("./../models/globalInfo");
 const YarnIssue = require("./../models/addYarnIssue");
 const BeamIssue = require("./../models/addBeamIssue");
 const AddSizings = require("./../models/addSizing");
+const Companies = require('../models/AddCompanys')
+
+router.get("/getSizingDataforBeamIssue", (req, res) => {
+  // filter data for beam issue
+  let arr = [];
+  AddSizings.find({})
+  .populate({path:'count', populate: { path: "quality" }})
+  .exec(function (err, data) {
+    if (err) {
+      return;
+    }
+    data.map(x => {
+      // console.log(x)
+          if(x.type === 'Twist' ) {
+            x.count && arr.push({quality: x.count, _id: x._id, type: x.type,ends: x.ends, beamArr: x.beamArr, yarn_issue_id: x.yarn_issue_id});
+          }
+      });
+    res.json(arr);
+  });
+});
+
+
+
+router.get("/getYarnIsue_sizing", (req, res) => {
+  // get beam issue outer items if its typeOuter value is 'warping' for beam issues count
+  let arr = [];
+  YarnIssue.find({})
+  .populate({path:'outer.count', populate: { path: "quality" }})
+  .exec(function (err, data) {
+    if (err) {
+      return;
+    }
+    data.forEach(v => {
+      v.outer.map(x => {
+          if(x.twisted !== undefined) {
+            x.count && arr.push({quality: x.count, _id: v._id, type: x.typeOuter, record_no: v.record_no});
+          }
+      });
+    });
+    res.json(arr);
+  });
+});
+
+
+router.get('/getCompanies_sizing', (req, res) => {
+    // get companies data
+    Companies.find({bank_code:  '1-1-1' || '2-1-1'}).
+        exec(function (err, data) {
+            console.log('bank_id', data, err)
+            res.json(data);
+        });
+})
 
 router.get("/getSizingInfo", (req, res) => {
   // sizing current record nos
@@ -85,8 +137,9 @@ router.get("/getSizingByRecordNo", (req, res) => {
 
 router.post("/addSizings", (req, res) => {
   // adds Sizisngs
-  console.log(req.body);
   const sizing = new AddSizings(req.body);
+  console.log(sizing);
+
   Info.findByIdAndUpdate(
     "5d6a2eeef7935f12787d9cc6",
     {
@@ -95,18 +148,20 @@ router.post("/addSizings", (req, res) => {
       }
     },
     (err, data) => {
-      // console.log('inc', err, data)
+      console.log('inc', err, data)
+      if(err) {
+        return
+      }
       sizing
         .save()
         .then(x => {
           res.json(x);
         })
-        .catch(err => {
-          // console.log('err', err)
-          res.status(500).send("err", err);
+        .catch(error => {
+          console.log('err', error)
+          res.status(500).send(error);
         });
-    }
-  );
+    });
 });
 
 router.get("/getBeamIssueInfo", (req, res) => {
@@ -202,7 +257,33 @@ router.get("/getYarnIssue_outer", (req, res) => {
 router.post("/addBeamIssue", (req, res) => {
   // adds beam issue
   console.log(req.body);
-  const beamIssue = new BeamIssue(req.body);
+  let beamArr = []
+  req.body.beamArr.map(v => {
+    if(v.checked) {
+        AddSizings.findOne({"_id": req.body.count_id})
+        .exec(function (err, data) {
+          if (err) {
+            return;
+          }
+          console.log(data)
+          let arr = []
+              data.beamArr.map(val => {
+                console.log(val._id , v._id)
+                if(val._id != v._id) {
+                  arr.push(val)
+                  // data.remove()
+                }
+              })
+              data.beamArr = arr;
+              data.save();
+        });
+      beamArr.push(v)
+    }
+  })
+
+  let obj = req.body;
+   obj.beamArr = beamArr;
+  const beamIssue = new BeamIssue(obj);
   Info.findByIdAndUpdate(
     "5d6a2eeef7935f12787d9cc6",
     {
@@ -212,6 +293,7 @@ router.post("/addBeamIssue", (req, res) => {
     },
     (err, data) => {
       console.log("inc", err, data);
+
       beamIssue
         .save()
         .then(x => {
@@ -297,8 +379,6 @@ router.post("/addFabricQuality", (req, res) => {
 router.get("/getFabricQuality", (req, res) => {
   // gets fabric qualitys
   FabricQuality.find({})
-    .populate({ path: "warp_count", populate: { path: "quality" } })
-    .populate({ path: "weft_count", populate: { path: "quality" } })
     .exec(function(err, data) {
       if (err) {
         console.log("error", err);
@@ -311,13 +391,14 @@ router.get("/getFabricQuality", (req, res) => {
 router.post("/editFabricQuality", (req, res) => {
   // edits fabric qualitys
   console.log(req.body);
-  const { _id, warp_count, weft_count, ends, picks, width } = req.body;
+  const { _id, warp_count, weft_count, ends, picks, width, quality_name } = req.body;
   FabricQuality.findOne({ _id: _id }, function(err, data) {
     data.warp_count = warp_count;
     data.weft_count = weft_count;
     data.ends = ends;
     data.picks = picks;
     data.width = width;
+    data.quality_name = quality_name;
     data.save();
     res.json(data);
   });

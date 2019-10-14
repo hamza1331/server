@@ -162,7 +162,7 @@ router.get('/getCompanies', (req, res) => {
     Companies.find({}).
         populate("bank_id").
         exec(function (err, data) {
-            console.log('bank_id', data, err)
+            // console.log('bank_id', data, err)
             res.json(data);
         });
 })

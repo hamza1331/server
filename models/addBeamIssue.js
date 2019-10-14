@@ -2,6 +2,16 @@ const mongoose = require("mongoose");
 // const validator = require("validator");
 const Schema = mongoose.Schema;
 
+
+const beamArr = new mongoose.Schema({
+    beam_no: {
+        type: Number
+    },
+    beam_length: {
+      type: Number,
+    }
+})
+
 var beamIssueSchema = new Schema({
   record_no: {
     type: Number
@@ -9,9 +19,17 @@ var beamIssueSchema = new Schema({
   date: {
     type: String
   },
+  type: {
+    type: String
+  },
   head_of_ac: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "companies",
+    required: true
+  },
+  yarn_issue_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "yarnissues",
     required: true
   },
   count: {
@@ -40,7 +58,8 @@ var beamIssueSchema = new Schema({
   generatedOn: {
     type: Date,
     default: new Date().getTime()
-  }
+  },
+  beamArr: [beamArr]
 });
 
 const BeamIssue = mongoose.model("beamIssues", beamIssueSchema);

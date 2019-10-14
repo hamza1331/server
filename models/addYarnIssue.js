@@ -14,11 +14,11 @@ const inner = new mongoose.Schema({
     ref: "brands",
     required: true
   },
-  unit: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "units",
-    required: true
-  },
+  // unit: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "units",
+  //   required: true
+  // },
   packing_per_unit: {
     type: Number
   },
@@ -37,7 +37,7 @@ const inner = new mongoose.Schema({
     type: Number,
   },
   unit_kg: {
-    type: Number,
+    type: String,
   },
   gst: {
     type: Number,
@@ -47,6 +47,15 @@ const inner = new mongoose.Schema({
   },
   no_of_cartons: {
     type:Number
+  },
+  used: {
+    type: Boolean
+  },
+  d_no: {
+    type: String
+  },
+  twisted: {
+    type: Number
   }
 });
 
@@ -61,11 +70,11 @@ const outer = new mongoose.Schema({
     ref: "brands",
     required: true
   },
-  unit: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "units",
-    required: true
-  },
+  // unit: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "units",
+  //   required: true
+  // },
   packing_per_unit: {
     type: Number
   },
@@ -85,6 +94,24 @@ const outer = new mongoose.Schema({
   },
   typeOuter: {
     type: String
+  },
+  d_no: {
+    type: String
+  },
+  rate: {
+    type: Number,
+  },
+  unit_kg: {
+    type: String,
+  },
+  gst: {
+    type: Number,
+  },
+  total_amount: {
+    type: Number,
+  },
+  twisted: {
+    type: Number
   }
 });
 

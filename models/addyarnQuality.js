@@ -12,10 +12,13 @@ const quality = new mongoose.Schema({
     s_d: {
       type: Number
     },
+    twisted: {
+      type: Number,
+    },
     generatedOn: {
         type: Number,
         default: new Date().getTime()
-    },
+    }
 })
 
 const YarnQuality = mongoose.model('yarn_qualitys', quality);

@@ -20,6 +20,10 @@ const fabricQuality = new mongoose.Schema({
   width: {
     type: Number
   },
+  quality_name: {
+    type: String,
+    default: ""
+  },
   generatedOn: {
     type: Number,
     default: new Date().getTime()

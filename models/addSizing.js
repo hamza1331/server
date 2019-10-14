@@ -2,9 +2,27 @@ const mongoose = require("mongoose");
 // const validator = require("validator");
 const Schema = mongoose.Schema;
 
+const beamArr = new mongoose.Schema({
+    beam_no: {
+        type: Number
+    },
+    beam_length: {
+      type: Number,
+    }
+})
+
+
 var addSizingSchema = new Schema({
   record_no: {
     type: Number
+  },
+  type: {
+    type: String
+  },
+  yarn_issue_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "yarnissues",
+    required: true
   },
   date: {
     type: String
@@ -28,7 +46,7 @@ var addSizingSchema = new Schema({
     type: Number
   },
   set_no: {
-    type: Number
+    type: String
   },
   beam_no: {
     type: Number
@@ -57,6 +75,7 @@ var addSizingSchema = new Schema({
   gst_total_amount: {
     type: Number
   },
+  beamArr: [beamArr],
   generatedOn: {
     type: Date,
     default: new Date().getTime()
