@@ -19,6 +19,9 @@ var addSizingSchema = new Schema({
   type: {
     type: String
   },
+  twists: {
+    type: Number
+  },
   yarn_issue_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "yarnissues",
