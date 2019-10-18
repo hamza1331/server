@@ -53,7 +53,8 @@ var beamIssueSchema = new Schema({
     type: Number
   },
   fabric_quality: {
-    type: String
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "fabricQualitys",
   },
   generatedOn: {
     type: Date,

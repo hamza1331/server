@@ -111,6 +111,8 @@ app.use('/checksInHand', verifyToken, require('./CheckInHands/index'))
 app.use('/ledger', verifyToken, require('./newLedger/index'))
 app.use('/trial', require('./TrailBalance/index'))
 
+app.use('/newLedger', require('./newLedger/newLedger'))
+
 app.use('/yarn',verifyToken, require('./inventory/index'))
 app.use('/admin',verifyToken, require('./admin/index'))
 
