@@ -28,7 +28,6 @@ var beamIssueSchema = new Schema({
   head_of_ac: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "companies",
-    required: true
   },
   yarn_issue_id: {
     type: mongoose.Schema.Types.ObjectId,

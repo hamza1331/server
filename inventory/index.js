@@ -504,6 +504,7 @@ router.post("/addBeamIssue", (req, res) => {
     if (v.checked) {
       AddSizings.findOne({ _id: req.body.count_id }).exec(function(err, data) {
         if (err) {
+          console.log(err)
           return;
         }
         console.log(data);
@@ -533,8 +534,10 @@ router.post("/addBeamIssue", (req, res) => {
       }
     },
     (err, data) => {
-      console.log("inc", err, data);
-
+      // console.log("inc", err, data);
+      if(err) {
+        return
+      }
       beamIssue
         .save()
         .then(x => {
@@ -542,7 +545,7 @@ router.post("/addBeamIssue", (req, res) => {
         })
         .catch(err => {
           console.log("err", err);
-          res.status(500).send("err", err);
+          res.status(500).send(err);
         });
     }
   );
