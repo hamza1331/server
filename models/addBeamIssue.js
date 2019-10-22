@@ -9,6 +9,9 @@ const beamArr = new mongoose.Schema({
     },
     beam_length: {
       type: Number,
+    },
+    loom_no: {
+      type: Number
     }
 })
 
