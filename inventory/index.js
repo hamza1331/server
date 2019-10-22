@@ -17,36 +17,251 @@ router.get("/getSizingDataforBeamIssue", (req, res) => {
   let arr = [];
   AddSizings.find({})
     .populate([{ path: "count", populate: { path: "quality" } }])
-    // .exec(function(err, cour) {
-    //   if (err) console.log(err);
-    //   else {
-    //     AddSizings.populate(
-    //       cour,
-    //
-    //       "yarn_issue_id",
-    //       function(err, c1) {
-    //         if (err) console.log(err);
-    //         else console.log(c1);
-    //         res.json(c1);
-    //       }
-    //     );
-    //   }
-    // });
-  .exec(function (err, data) {
-    if (err) {
-      return;
-    }
-    data.map(x => {
-      // console.log(x)
-          // if(x.type === 'Twist' ) {
-            x.count && arr.push({quality: x.count, _id: x._id, type: x.type,ends: x.ends, beamArr: x.beamArr, yarn_issue_id: x.yarn_issue_id, twisted: x.twists});
-          // }
+    .exec(function(err, data) {
+      if (err) {
+        return;
+      }
+      data.map(x => {
+        x.count &&
+          arr.push({
+            quality: x.count,
+            _id: x._id,
+            type: x.type,
+            ends: x.ends,
+            beamArr: x.beamArr,
+            yarn_issue_id: x.yarn_issue_id,
+            twisted: x.twists
+          });
       });
-      res.json(arr)
-  });
+      res.json(arr);
+    });
 });
 
 router.get("/getYarnIsue_sizing", (req, res) => {
+  // get beam issue outer items if its typeOuter value is 'warping' for beam issues count
+  let arr = [];
+  let yarnId = [];
+  YarnIssue.find({})
+    .populate([
+      { path: "outer.count", populate: { path: "quality" } },
+      { path: "inner.count", populate: { path: "quality" } }
+    ])
+    .exec(function(err, data) {
+      if (err) {
+        return;
+      }
+      data.forEach(v => {
+        v.inner.map(x => {
+          if (x.type === "Twisted" && x.twisted !== undefined) {
+            x.count &&
+              arr.push({
+                x,
+                no_of_cartons: x.no_of_cartons,
+                total_weight: x.total_weight,
+                quality: x.count,
+                _id: v._id,
+                type: x.typeOuter,
+                record_no: v.record_no,
+                twisted: x.twisted,
+                type_1: "inner"
+              });
+            yarnId.push(
+              x.count.quality.quality +
+                "/" +
+                x.count.yarn_count +
+                "/" +
+                x.twisted
+            );
+          }
+        });
+        v.outer.map(x => {
+          if (x.typeOuter === "Twist" && x.twisted !== undefined) {
+            x.count &&
+              arr.push({
+                x,
+                no_of_cartons: x.no_of_cartons,
+                total_weight: x.total_weight,
+                quality: x.count,
+                _id: v._id,
+                type: x.typeOuter,
+                record_no: v.record_no,
+                twisted: x.twisted,
+                type_1: "outer"
+              }) &&
+              yarnId.push(
+                x.count.quality.quality +
+                  "/" +
+                  x.count.yarn_count +
+                  "/" +
+                  x.twisted
+              );
+          }
+        });
+      });
+
+      let final_yarn = [];
+      var deduped = yarnId.filter(function(sandwich, index) {
+        return yarnId.indexOf(sandwich) === index;
+      });
+
+      console.log(deduped);
+
+      deduped
+        .sort((a, b) => (a > b ? 1 : -1))
+        .map((v, e) => {
+          let issued = 0;
+          let recieved = 0;
+            let issued_kg = 0;
+            let recieved_kg = 0;
+          arr
+            .sort((a, b) =>
+              a.quality.quality + "/" + a.yarn_count + "/" + a.twisted >
+              b.quality.quality + "/" + b.yarn_count + "/" + b.twisted
+                ? 1
+                : -1
+            )
+            .map((w, i) => {
+
+              if(  i === 0 &&
+                v ===
+                  w.quality.quality.quality +
+                    "/" +
+                    w.quality.yarn_count +
+                    "/" +
+                    w.twisted
+              ) {
+                if(w.type_1 === "outer") {
+                  issued += w.no_of_cartons
+                  issued_kg += w.total_weight
+
+                } else {
+                  recieved += w.no_of_cartons
+                  recieved_kg += w.total_weight
+                }
+                console.log('first')
+              }
+
+              if(  i !== 0 &&
+                v ===
+                  w.quality.quality.quality +
+                    "/" +
+                    w.quality.yarn_count +
+                    "/" +
+                    w.twisted
+              ) {
+                if(w.type_1 === "outer") {
+                  issued += w.no_of_cartons
+                  issued_kg += w.total_weight
+
+                } else {
+                  recieved += w.no_of_cartons
+                  recieved_kg += w.total_weight
+                }
+              }
+              if (
+                i !== 0 &&
+                v ===
+                  w.quality.quality.quality +
+                    "/" +
+                    w.quality.yarn_count +
+                    "/" +
+                    w.twisted
+                    &&
+                arr[i - 1].quality.quality.quality +
+                  "/" +
+                  w.quality.yarn_count +
+                  "/" +
+                  w.twisted
+                  ===
+                  w.quality.quality.quality +
+                    "/" +
+                    w.quality.yarn_count +
+                    "/" +
+                    w.twisted
+              ) {
+                arr[i].issued = issued;
+                arr[i].recieved = recieved;
+                arr[i].issued_kg = issued_kg;
+                arr[i].recieved_kg = recieved_kg;
+                console.log(recieved_kg, issued_kg)
+                final_yarn.push(arr[i]);
+                return;
+              }
+            });
+        });
+
+      // yarnId.map(a => {
+      //   console.log(a)
+      // })
+
+      // arr.map(a => {
+      //   console.log(a.quality._id)
+      // })
+
+      console.log(final_yarn.length);
+      res.json(final_yarn);
+    });
+});
+
+// router.get("/getYarnIsue_sizing", (req, res) => {
+//   // get beam issue outer items if its typeOuter value is 'warping' for beam issues count
+//   let arr = [];
+//   YarnIssue.find({})
+//     .populate({ path: "outer.count", populate: { path: "quality" } })
+//     .exec(function(err, data) {
+//       if (err) {
+//         return;
+//       }
+//       data.forEach(v => {
+//         v.outer.map(x => {
+//           if (x.typeOuter === "Twist") {
+//             x.count &&
+//               arr.push({
+//                 x,
+//                 no_of_cartons: x.no_of_cartons,
+//                 total_weight: x.total_weight,
+//                 quality: x.count,
+//                 _id: v._id,
+//                 type: x.typeOuter,
+//                 record_no: v.record_no,
+//                 twisted: x.twisted,
+//
+//               });
+//           }
+//         });
+//       });
+//       res.json(arr);
+//     });
+// });
+
+router.get("/getYarnRecieve_twisted", (req, res) => {
+  // get beam issue outer items if its typeOuter value is 'warping' for beam issues count
+  let arr = [];
+  YarnIssue.find({})
+    .populate({ path: "inner.count", populate: { path: "quality" } })
+    .exec(function(err, data) {
+      if (err) {
+        return;
+      }
+      data.forEach(v => {
+        v.inner.map(x => {
+          if (x.type === "Twisted") {
+            x.count &&
+              arr.push({
+                quality: x.count,
+                _id: v._id,
+                type: x.typeOuter,
+                record_no: v.record_no,
+                twisted: x.twisted
+              });
+          }
+        });
+      });
+      res.json(arr);
+    });
+});
+
+router.get("/getYarnIsue_sizing_warping", (req, res) => {
   // get beam issue outer items if its typeOuter value is 'warping' for beam issues count
   let arr = [];
   YarnIssue.find({})
@@ -57,7 +272,7 @@ router.get("/getYarnIsue_sizing", (req, res) => {
       }
       data.forEach(v => {
         v.outer.map(x => {
-          if (x.typeOuter === "Twist") {
+          if (x.typeOuter === "Warping") {
             x.count &&
               arr.push({
                 quality: x.count,
@@ -75,9 +290,15 @@ router.get("/getYarnIsue_sizing", (req, res) => {
 
 router.get("/getCompanies_sizing", (req, res) => {
   // get companies data
-  Companies.find({ bank_code: "1-1-1" || "2-1-1" }).exec(function(err, data) {
-    console.log("bank_id", data, err);
-    res.json(data);
+  Companies.find({}).exec(function(err, data) {
+    // console.log("bank_id", data, err);
+    let data_arr = [];
+    let response = data.map(v => {
+      if (v.bank_code === "1-1-1" || v.bank_code === "2-1-1") {
+        data_arr.push(v);
+      }
+    });
+    res.json(data_arr);
   });
 });
 
@@ -117,7 +338,8 @@ router.post("/editSizing", (req, res) => {
     sizing_rate,
     amount,
     gst,
-    gst_total_amount
+    gst_total_amount,
+    beamArr
   } = req.body;
   AddSizings.findOne({ _id: _id }, function(err, data) {
     data.chartOfAccounts = chartOfAccounts;
@@ -132,6 +354,7 @@ router.post("/editSizing", (req, res) => {
     data.amount = amount;
     data.gst = gst;
     data.gst_total_amount = gst_total_amount;
+    data.beamArr = beamArr;
     data.save();
     res.json(data);
   });
@@ -340,6 +563,23 @@ router.get("/getYarnIssueByRecordNo", (req, res) => {
   });
 
   console.log("runned");
+});
+
+
+router.post("/editYarnIssue", (req, res) => {
+  // edits beam Nos
+  console.log(req.body);
+  const {
+    _id,
+    inner,
+    outer
+  } = req.body;
+  YarnIssue.findOne({ _id: _id }, function(err, data) {
+    data.inner = inner
+    data.outer = outer
+    data.save()
+    res.json(data);
+  });
 });
 
 router.post("/addYarnIssue", (req, res) => {
@@ -592,3 +832,4 @@ router.post("/addUnit", (req, res) => {
 });
 
 module.exports = router;
+///
