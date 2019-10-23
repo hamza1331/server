@@ -108,7 +108,7 @@ app.use('/jjournals', verifyToken, require('./JJournals/index'))
 
 app.use('/checks', verifyToken, require('./CheckBookRecords/index'))
 app.use('/checksInHand', verifyToken, require('./CheckInHands/index'))
-app.use('/ledger', verifyToken, require('./newLedger/index'))
+app.use('/ledger', require('./newLedger/index'))
 app.use('/trial', require('./TrailBalance/index'))
 
 app.use('/newLedger', require('./newLedger/newLedger'))
