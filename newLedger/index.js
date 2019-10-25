@@ -139,16 +139,168 @@ router.get("/getLedger", (req, res) => {
                     let yarn_arr = [];
 
                     YarnIssue.find({})
-                      .populate("inner.chartOfAccounts inner.count outer.chartOfAccounts")
+                      .populate(
+                        "inner.chartOfAccounts inner.count outer.chartOfAccounts"
+                      )
                       .exec(function(err, data) {
                         if (err) {
                           console.log("Error GetLedger");
                         } else {
                           data.map(v => {
                             v.inner.map(inner => {
-                              // if(('5-3-1-1' === req.query.code || '1-1-5-1' === req.query.code) && req.query.edate > v.generatedOn && req.query.sdate < v.generatedOn) {
-                              //   yarn_arr.push({ 'record_no': v.record_no, 'data': outer})
-                              // }
+                              if(('1-1-5-1' === req.query.code) && req.query.edate > v.generatedOn && req.query.sdate < v.generatedOn) {
+                                
+                              if (inner.type !== "Received") {
+                                credit += (inner.total_weight * inner.rate) * inner.gst/100;
+                                if (
+                                  inner.chartOfAccounts &&
+                                  req.query.edate > v.generatedOn &&
+                                  req.query.sdate < v.generatedOn
+                                ) {
+                                  let remarks =
+                                    inner.type === "Purchased"
+                                      ? "To Record Purchase of Yarn " +
+                                        inner.count.yarn_count +
+                                        ",cartons => " +
+                                        inner.no_of_cartons +
+                                        ",kgs  => " +
+                                        inner.total_weight +
+                                        ",Lbs  => " +
+                                        inner.total_weight_lbs +
+                                        "@ => " +
+                                        inner.total_amount +
+                                        ",D/o No.  => " +
+                                        inner.d_no +
+                                        ",Party Name  => " +
+                                        inner.chartOfAccounts.head_of_ac +
+                                        "."
+                                      : "To Record Twisting Charges" +
+                                        inner.count.yarn_count +
+                                        ",cartons => " +
+                                        inner.no_of_cartons +
+                                        ",kgs  => " +
+                                        inner.total_weight +
+                                        ",Lbs  => " +
+                                        inner.total_weight_lbs +
+                                        "@ => " +
+                                        inner.rate +
+                                        ",D/o No.  => " +
+                                        inner.d_no +
+                                        ",Party Name  => " +
+                                        inner.chartOfAccounts.head_of_ac +
+                                        ".";
+
+                                  yarn_arr.push({
+                                    record_no: v.record_no,
+                                    data: inner,
+                                    record_type:
+                                      inner.type === "Purchased"
+                                        ? "Yarn Purchased"
+                                        : "Yarn Twisted",
+                                    remarks: remarks,
+                                    party_name: "Sales Tax",
+                                    date: v.generatedOn,
+                                    balance: startingBalance,
+                                    op_bal: current_op_bal
+                                  });
+                                } else if (
+                                  req.query.sdate > v.generatedOn &&
+                                    ('1-1-5-1' === req.query.code)
+                                ) {
+                                  console.log("re____________", current_op_bal);
+                                  credit += (inner.total_amount * inner.rate)*inner.gst/100;
+                                  current_op_bal -= parseInt(
+                                    (inner.total_amount * inner.rate)*inner.gst/100
+                                  );
+                                }
+                              }
+                              return;
+                              }
+
+                              if(('5-3-1-1' === req.query.code || '5-1-4-1' === req.query.code) && req.query.edate > v.generatedOn && req.query.sdate < v.generatedOn) {
+                                
+                                if (inner.type !== "Received") {
+                                  credit += inner.total_weight * inner.rate ;
+                                  if (
+                                    inner.chartOfAccounts
+                                  ) {
+                                    let remarks =
+                                    inner.type === "Purchased"
+                                    ? "To Record Purchase of Yarn " +
+                                          inner.count.yarn_count +
+                                          ",cartons => " +
+                                          inner.no_of_cartons +
+                                          ",kgs  => " +
+                                          inner.total_weight +
+                                          ",Lbs  => " +
+                                          inner.total_weight_lbs +
+                                          "@ => " +
+                                          inner.total_amount +
+                                          ",D/o No.  => " +
+                                          inner.d_no +
+                                          ",Party Name  => " +
+                                          inner.chartOfAccounts.head_of_ac +
+                                          "."
+                                        : "To Record Twisting Charges" +
+                                          inner.count.yarn_count +
+                                          ",cartons => " +
+                                          inner.no_of_cartons +
+                                          ",kgs  => " +
+                                          inner.total_weight +
+                                          ",Lbs  => " +
+                                          inner.total_weight_lbs +
+                                          "@ => " +
+                                          inner.rate +
+                                          ",D/o No.  => " +
+                                          inner.d_no +
+                                          ",Party Name  => " +
+                                          inner.chartOfAccounts.head_of_ac +
+                                          ".";
+  
+                                          if(req.query.code === "5-1-4-1" && inner.type === "Twisted") {
+                                            yarn_arr.push({
+                                              record_no: v.record_no,
+                                              data: inner,
+                                              record_type:
+                                               "Yarn Twisted",
+                                              remarks: remarks,
+                                              party_name: "Twisting Expense",
+                                              date: v.generatedOn,
+                                              balance: startingBalance,
+                                              op_bal: current_op_bal
+                                            });
+                                          }
+
+                                          
+                                          if(req.query.code === "5-3-1-1" && inner.type === "Purchased") {
+                                            yarn_arr.push({
+                                              record_no: v.record_no,
+                                              data: inner,
+                                              record_type:
+                                               "Yarn Purchase",
+                                              remarks: remarks,
+                                              party_name:
+                                                 "Yarn Purchase",
+                                              date: v.generatedOn,
+                                              balance: startingBalance,
+                                              op_bal: current_op_bal
+                                            });
+                                          }
+                                 
+                                  } else if (
+                                    req.query.sdate > v.generatedOn &&
+                                    (('5-3-1-1' === req.query.code || '5-1-4-1' === req.query.code))
+                                  ) {
+                                    console.log("re____________", current_op_bal);
+                                    credit += parseInt((inner.total_amount * inner.rate) + (inner.total_amount * inner.rate)*inner.gst/100);
+                                    current_op_bal -= parseInt(
+                                      parseInt((inner.total_amount * inner.rate) + (inner.total_amount * inner.rate)*inner.gst/100)
+                                    );
+                                  }
+                                }
+                                return;
+                                }
+
                               if (inner.type !== "Received") {
                                 credit += inner.total_amount;
                                 if (
@@ -158,21 +310,59 @@ router.get("/getLedger", (req, res) => {
                                   req.query.edate > v.generatedOn &&
                                   req.query.sdate < v.generatedOn
                                 ) {
+                                  let remarks =
+                                    inner.type === "Purchased"
+                                      ? "To Record Purchase of Yarn " +
+                                        inner.count.yarn_count +
+                                        ",cartons => " +
+                                        inner.no_of_cartons +
+                                        ",kgs  => " +
+                                        inner.total_weight +
+                                        ",Lbs  => " +
+                                        inner.total_weight_lbs +
+                                        "@ => " +
+                                        inner.rate +
+                                        ",D/o No.  => " +
+                                        inner.d_no +
+                                        ",Party Name  => " +
+                                        inner.chartOfAccounts.head_of_ac +
+                                        "."
+                                      : "To Record Twisting Charges" +
+                                        inner.count.yarn_count +
+                                        ",cartons => " +
+                                        inner.no_of_cartons +
+                                        ",kgs  => " +
+                                        inner.total_weight +
+                                        ",Lbs  => " +
+                                        inner.total_weight_lbs +
+                                        "@ => " +
+                                        inner.total_amount +
+                                        ",D/o No.  => " +
+                                        inner.d_no +
+                                        ",Party Name  => " +
+                                        inner.chartOfAccounts.head_of_ac +
+                                        ".";
+
                                   yarn_arr.push({
                                     record_no: v.record_no,
                                     data: inner,
-                                    record_type: 'Yarn Recieved',
-                                    remarks: 'To Record Purchase of Yarn ' + inner.count.yarn_count + ",cartons => "+ inner.no_of_cartons + ",kgs  => " + inner.total_weight +",Lbs  => "+ inner.total_weight_lbs + "@ => "+ inner.total_amount + ",D/o No.  => " + inner.d_no+ ",Party Name  => "+ inner.chartOfAccounts.head_of_ac + '.',
+                                    record_type:
+                                      inner.type === "Purchased"
+                                        ? "Yarn Purchased"
+                                        : "Yarn Twisted",
+                                    remarks: remarks,
                                     party_name:
-                                      inner.chartOfAccounts.head_of_ac,
+                                      inner.type === "Purchased"
+                                        ? "Yarn Purchase"
+                                        : "Twisting Expenses",
                                     date: v.generatedOn,
                                     balance: startingBalance,
-                                    op_bal: current_op_bal
+                                    op_bal: current_op_bal,
+                                    party: true
                                   });
                                 } else if (
                                   req.query.sdate > v.generatedOn &&
-                                  (inner.payment_mode._id == req.query.id ||
-                                    v.party.company_code === req.query.code)
+                                  ('5-3-1-1' === req.query.code || '5-1-4-1' === req.query.code)
                                 ) {
                                   console.log("re____________", current_op_bal);
                                   credit += inner.total_amount;
@@ -191,7 +381,7 @@ router.get("/getLedger", (req, res) => {
                           if (req.query.onlyBalanceDetails) {
                             let finalDebit = 0;
                             let finalCredit = 0;
-                            let final = 0;
+                            // let final = 0;
                             [...allArr, ...yarn_arr].map(v => {
                               if (v.data.record_type === "jjournal") {
                                 if (v.data.debit !== 0) {
@@ -206,9 +396,16 @@ router.get("/getLedger", (req, res) => {
                               } else if (v.data.record_type === "payment") {
                                 finalCredit += parseInt(v.data.amount);
                               } else if (
-                                v.record_type === "Yarn Recieved"
+                                v.record_type ===
+                                ("Yarn Purchased" || "Yarn Twisted")
                               ) {
-                                finalCredit += parseInt(v.data.total_amount);
+                                finalDebit += parseInt(((v.data.total_weight * v.data.rate) * v.data.gst/100) + (v.data.total_weight * v.data.rate));
+                              }
+                              else if (
+                                v.record_type ===
+                                ("Sales Tax")
+                              ) {
+                                finalDebit += parseInt((v.data.total_amount * v.data.rate)*v.data.gst/100);
                               }
                             });
 
@@ -236,14 +433,12 @@ router.get("/getLedger", (req, res) => {
                           }
 
                           let x = {
-                            arr: [...allArr,...yarn_arr],
+                            arr: [...allArr, ...yarn_arr],
                             current_op_bal,
                             credit,
                             debit,
                             final: credit - debit + current_op_bal
                           };
-
-
 
                           res.json(x);
                         }
