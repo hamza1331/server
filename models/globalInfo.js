@@ -25,6 +25,10 @@ const globalInfo = new mongoose.Schema({
       type: Number,
       default: 1
     },
+    fabricIssue_info: {
+      type: Number,
+      default: 1
+    },
     software_name: {
       type: String,
       default: 'Texile Management System'
