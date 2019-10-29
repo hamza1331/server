@@ -63,4 +63,22 @@ router.post("/addFabricIssue", (req, res) => {
   });
   
 
+  
+router.post("/editFabricIssue", (req, res) => {
+  // edits beam Nos
+  console.log(req.body);
+  const {
+    _id,
+    inner,
+    outer
+  } = req.body;
+  FabricIssue.findOne({ _id: _id }, function(err, data) {
+    data.inner = inner
+    data.outer = outer
+    data.save()
+    res.json(data);
+  });
+});
+
+
   module.exports = router;
