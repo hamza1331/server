@@ -37,6 +37,68 @@ router.get("/getSizingDataforBeamIssue", (req, res) => {
     });
 });
 
+router.get("/getSizingCount", (req, res) => {
+  // filter data for beam issue
+  let { _id } = req.query;
+  console.log("++++++++++=============++++++++++++++");
+  let arr = [];
+  let final_Arr = [];
+  YarnIssue.find({})
+    .populate([
+      { path: "outer.count", populate: { path: "quality" } },
+      { path: "outer.chartOfAccounts", populate: { path: "bank_id" } }
+    ])
+    .exec(function(err, data) {
+      if (err) {
+        return;
+      }
+
+      data.forEach(v => {
+        v.outer.map(x => {
+          // console.log(x.typeOuter === "Warping", x.chartOfAccounts);
+          if (x.typeOuter === "Warping" && x.chartOfAccounts._id == _id) {
+            arr.push(x);
+          }
+        });
+      });
+
+      AddSizings.find({})
+        .populate([
+          { path: "count", populate: { path: "quality" } },
+          { path: "chartOfAccounts", populate: { path: "bank_id" } }
+        ])
+        .exec(function(err, data) {
+          if (err) {
+            return;
+          }
+
+          arr.map((v, i) => {
+            let issued = 0;
+            data.map((x) => {
+              if (
+                v.count.yarn_count == x.count.yarn_count &&
+                v.chartOfAccounts.company_code == x.chartOfAccounts.company_code
+              ) {
+                issued += parseInt(x.beam_lbs ? Math.abs(x.beam_lbs): 0);
+                console.log(issued, x.beam_lbs, 'op');
+                let obj = arr[i];
+                obj_main = {
+                  ...obj,
+                  issued: Math.abs(issued)
+                };
+                let xoxo = { ...(obj_main["_doc"] ? obj_main["_doc"]: obj_main), issued: obj_main.issued };
+                arr[i] = xoxo;
+                }
+            });
+          });
+
+          res.json(arr.filter(v => v.issued !== undefined)) && console.log("opop");
+          console.log("++++++++++=============++++++++++++++");
+        });
+      // console.log(arr[0].issued)
+    });
+});
+
 router.get("/getYarnIsue_sizing", (req, res) => {
   // get beam issue outer items if its typeOuter value is 'warping' for beam issues count
   let arr = [];
@@ -111,8 +173,8 @@ router.get("/getYarnIsue_sizing", (req, res) => {
         .map((v, e) => {
           let issued = 0;
           let recieved = 0;
-            let issued_kg = 0;
-            let recieved_kg = 0;
+          let issued_kg = 0;
+          let recieved_kg = 0;
           arr
             .sort((a, b) =>
               a.quality.quality + "/" + a.yarn_count + "/" + a.twisted >
@@ -121,8 +183,8 @@ router.get("/getYarnIsue_sizing", (req, res) => {
                 : -1
             )
             .map((w, i) => {
-
-              if(  i === 0 &&
+              if (
+                i === 0 &&
                 v ===
                   w.quality.quality.quality +
                     "/" +
@@ -130,18 +192,18 @@ router.get("/getYarnIsue_sizing", (req, res) => {
                     "/" +
                     w.twisted
               ) {
-                if(w.type_1 === "outer") {
-                  issued += w.no_of_cartons
-                  issued_kg += w.total_weight
-
+                if (w.type_1 === "outer") {
+                  issued += w.no_of_cartons;
+                  issued_kg += w.total_weight;
                 } else {
-                  recieved += w.no_of_cartons
-                  recieved_kg += w.total_weight
+                  recieved += w.no_of_cartons;
+                  recieved_kg += w.total_weight;
                 }
-                console.log('first')
+                console.log("first");
               }
 
-              if(  i !== 0 &&
+              if (
+                i !== 0 &&
                 v ===
                   w.quality.quality.quality +
                     "/" +
@@ -149,13 +211,12 @@ router.get("/getYarnIsue_sizing", (req, res) => {
                     "/" +
                     w.twisted
               ) {
-                if(w.type_1 === "outer") {
-                  issued += w.no_of_cartons
-                  issued_kg += w.total_weight
-
+                if (w.type_1 === "outer") {
+                  issued += w.no_of_cartons;
+                  issued_kg += w.total_weight;
                 } else {
-                  recieved += w.no_of_cartons
-                  recieved_kg += w.total_weight
+                  recieved += w.no_of_cartons;
+                  recieved_kg += w.total_weight;
                 }
               }
               if (
@@ -165,14 +226,12 @@ router.get("/getYarnIsue_sizing", (req, res) => {
                     "/" +
                     w.quality.yarn_count +
                     "/" +
-                    w.twisted
-                    &&
+                    w.twisted &&
                 arr[i - 1].quality.quality.quality +
                   "/" +
                   w.quality.yarn_count +
                   "/" +
-                  w.twisted
-                  ===
+                  w.twisted ===
                   w.quality.quality.quality +
                     "/" +
                     w.quality.yarn_count +
@@ -183,7 +242,7 @@ router.get("/getYarnIsue_sizing", (req, res) => {
                 arr[i].recieved = recieved;
                 arr[i].issued_kg = issued_kg;
                 arr[i].recieved_kg = recieved_kg;
-                console.log(recieved_kg, issued_kg)
+                console.log(recieved_kg, issued_kg);
                 final_yarn.push(arr[i]);
                 return;
               }
@@ -504,7 +563,7 @@ router.post("/addBeamIssue", (req, res) => {
     if (v.checked) {
       AddSizings.findOne({ _id: req.body.count_id }).exec(function(err, data) {
         if (err) {
-          console.log(err)
+          console.log(err);
           return;
         }
         console.log(data);
@@ -535,8 +594,8 @@ router.post("/addBeamIssue", (req, res) => {
     },
     (err, data) => {
       // console.log("inc", err, data);
-      if(err) {
-        return
+      if (err) {
+        return;
       }
       beamIssue
         .save()
@@ -568,19 +627,14 @@ router.get("/getYarnIssueByRecordNo", (req, res) => {
   console.log("runned");
 });
 
-
 router.post("/editYarnIssue", (req, res) => {
   // edits beam Nos
   console.log(req.body);
-  const {
-    _id,
-    inner,
-    outer
-  } = req.body;
+  const { _id, inner, outer } = req.body;
   YarnIssue.findOne({ _id: _id }, function(err, data) {
-    data.inner = inner
-    data.outer = outer
-    data.save()
+    data.inner = inner;
+    data.outer = outer;
+    data.save();
     res.json(data);
   });
 });
