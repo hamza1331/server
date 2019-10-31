@@ -112,7 +112,10 @@ const outer = new mongoose.Schema({
   },
   twisted: {
     type: Number
-  }
+  },
+   i: {
+     type: Number
+   }
 });
 
 var YarnIssueSchema = new mongoose.Schema({

@@ -113,6 +113,7 @@ app.use('/trial', require('./TrailBalance/index'))
 
 app.use('/newLedger', require('./newLedger/newLedger'))
 
+app.use('/dailyReport',verifyToken, require('./inventory/dailyReport'))
 app.use('/fabric',verifyToken, require('./inventory/fabric'))
 app.use('/yarn',verifyToken, require('./inventory/index'))
 app.use('/admin',verifyToken, require('./admin/index'))
