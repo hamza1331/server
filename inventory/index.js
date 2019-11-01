@@ -61,7 +61,7 @@ router.get("/getSizingCount", (req, res) => {
           }
         });
       });
-
+      // console.log("arr", arr);
       AddSizings.find({})
         .populate([
           { path: "count", populate: { path: "quality" } },
@@ -71,30 +71,60 @@ router.get("/getSizingCount", (req, res) => {
           if (err) {
             return;
           }
+          let exists = null;
 
           arr.map((v, i) => {
             let issued = 0;
-            data.map((x) => {
+            data.map(x => {
               if (
                 v.count.yarn_count == x.count.yarn_count &&
                 v.chartOfAccounts.company_code == x.chartOfAccounts.company_code
               ) {
-                issued += parseInt(x.beam_lbs ? Math.abs(x.beam_lbs): 0);
-                console.log(issued, x.beam_lbs, 'op');
+                exists = true;
+                issued += parseInt(x.beam_lbs ? Math.abs(x.beam_lbs) : 0);
+                console.log(issued, x.beam_lbs, "op");
                 let obj = arr[i];
                 obj_main = {
                   ...obj,
                   issued: Math.abs(issued)
                 };
-                let xoxo = { ...(obj_main["_doc"] ? obj_main["_doc"]: obj_main), issued: obj_main.issued };
+                let xoxo = {
+                  ...(obj_main["_doc"] ? obj_main["_doc"] : obj_main),
+                  issued: obj_main.issued
+                };
                 arr[i] = xoxo;
-                }
+              }
             });
           });
 
-          res.json(arr.filter(v => v.issued !== undefined)) && console.log("opop");
+          if (exists === true) {
+            console.log('if', exists)
+            res.json(arr.filter(v => v.issued !== undefined))
+          } else if(exists !== null){
+            console.log('else', exists)
+            arr.map((v, i) => {
+              let issued = 0;
+              let obj = arr[i];
+              obj_main = {
+                ...obj,
+                issued: Math.abs(issued)
+              };
+              let xoxo = {
+                ...(obj_main["_doc"] ? obj_main["_doc"] : obj_main),
+                issued: obj_main.issued
+              };
+              arr[i] = xoxo;
+            });
+            res.json(arr.filter(v => v.issued !== undefined))
+          }
+
+          if(arr.length === 0) {
+            res.json([])
+          }
+       
           console.log("++++++++++=============++++++++++++++");
         });
+    
       // console.log(arr[0].issued)
     });
 });
