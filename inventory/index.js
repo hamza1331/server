@@ -597,11 +597,11 @@ router.post("/addBeamIssue", (req, res) => {
           return;
         }
         console.log(data);
-        let arr = [];
-        data.beamArr.map(val => {
+        let arr = data.beamArr;
+        data.beamArr.map((val, i) => {
           console.log(val._id, v._id);
-          if (val._id != v._id) {
-            arr.push(val);
+          if (val._id === v._id) {
+            arr[i].used = true 
             // data.remove()
           }
         });
