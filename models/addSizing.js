@@ -8,6 +8,10 @@ const beamArr = new mongoose.Schema({
     },
     beam_length: {
       type: Number,
+    },
+    used: {
+      type: Boolean,
+      default: false
     }
 })
 
