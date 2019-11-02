@@ -80,7 +80,7 @@ var addSizingSchema = new Schema({
   },
   beamArr: [beamArr],
   generatedOn: {
-    type: Date,
+    type: Number,
     default: new Date().getTime()
   }
 });
