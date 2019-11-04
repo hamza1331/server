@@ -650,6 +650,59 @@ router.get("/getLedger", (req, res) => {
                                     data.map(v => {
                                       v.inner.map(inner => {
                                         if (
+                                          inner.party.company_code ===
+                                            req.query.code &&
+                                          req.query.edate > v.generatedOn &&
+                                          req.query.sdate < v.generatedOn
+                                        ) {
+                                          if (inner.type !== "Own Weaving") {
+                                            let remarks =
+                                              "To Record Purchase of Fabric " +
+                                              "party" +
+                                              inner.party.head_of_ac +
+                                              ".";
+                                            fabric_arr.push({
+                                              record_no: v.record_no,
+                                              details: inner,
+                                              record_type: "Fabic Receive",
+                                              remarks: remarks,
+                                              party_name:
+                                                inner.party.head_of_ac,
+                                              date: v.generatedOn,
+                                              balance: startingBalance,
+                                              op_bal: current_op_bal
+                                            });
+                                            // console.log("h", fabric_arr);
+                                            credit += parseInt(
+                                              inner.meter * inner.rate +
+                                                (inner.meter *
+                                                  inner.rate *
+                                                  inner.gst) /
+                                                  100
+                                            );
+                                          }
+                                        } else if (
+                                          req.query.sdate > v.generatedOn &&
+                                          req.query.code ===
+                                            inner.party.company_code
+                                        ) {
+                                          credit += parseInt(
+                                            inner.meter * inner.rate +
+                                              (inner.meter *
+                                                inner.rate *
+                                                inner.gst) /
+                                                100
+                                          );
+                                          current_op_bal -= parseInt(
+                                            inner.meter * inner.rate +
+                                              (inner.meter *
+                                                inner.rate *
+                                                inner.gst) /
+                                                100
+                                          );
+                                        }
+
+                                        if (
                                           "5-1-5-1" === req.query.code &&
                                           req.query.edate > v.generatedOn &&
                                           req.query.sdate < v.generatedOn
@@ -657,31 +710,132 @@ router.get("/getLedger", (req, res) => {
                                           if (inner.type !== "Own Weaving") {
                                             let remarks =
                                               "To Record Purchase of Fabric " +
-                                           
+                                              "party" +
+                                              inner.party.head_of_ac +
                                               ".";
                                             fabric_arr.push({
                                               record_no: v.record_no,
                                               details: inner,
                                               record_type: "Fabic Receive",
                                               remarks: remarks,
-                                              party_name: "Yarn Purchase",
+                                              party_name:
+                                                inner.party.head_of_ac,
+                                              date: v.generatedOn,
+                                              balance: startingBalance,
+                                              op_bal: current_op_bal
+                                            });
+                                            // console.log("h", fabric_arr);
+                                            credit += parseInt(
+                                              outer.meter * outer.rate
+                                            );
+                                          }
+                                        } else if (
+                                          req.query.sdate > v.generatedOn &&
+                                          req.query.code === "5-1-5-1"
+                                        ) {
+                                          credit += parseInt(
+                                            inner.meter * inner.rate
+                                          );
+                                          current_op_bal -= parseInt(
+                                            inner.meter * inner.rate
+                                          );
+                                        }
+                                      });
+                                      v.outer.map(outer => {
+                                        if (
+                                          outer.party.company_code ===
+                                            req.query.code &&
+                                          req.query.edate > v.generatedOn &&
+                                          req.query.sdate < v.generatedOn
+                                        ) {
+                                          if (outer.type !== "Own Weaving") {
+                                            let remarks =
+                                              "To Record Sale of Fabric " +
+                                              "party" +
+                                              outer.party.head_of_ac +
+                                              ".";
+                                            fabric_arr.push({
+                                              record_no: v.record_no,
+                                              details: outer,
+                                              record_type: "Fabic Sale",
+                                              remarks: remarks,
+                                              party_name:
+                                                outer.party.head_of_ac,
+                                              date: v.generatedOn,
+                                              balance: startingBalance,
+                                              op_bal: current_op_bal
+                                            });
+                                            // console.log("h", fabric_arr);
+                                            credit += parseInt(
+                                              outer.meter * outer.rate +
+                                                (outer.meter *
+                                                  outer.rate *
+                                                  outer.gst) /
+                                                  100
+                                            );
+                                          }
+                                        } else if (
+                                          req.query.sdate > v.generatedOn &&
+                                          req.query.code ===
+                                            outer.party.company_code
+                                        ) {
+                                          credit += parseInt(
+                                            outer.meter * outer.rate +
+                                              (outer.meter *
+                                                outer.rate *
+                                                outer.gst) /
+                                                100
+                                          );
+                                          current_op_bal -= parseInt(
+                                            outer.meter * outer.rate +
+                                              (outer.meter *
+                                                outer.rate *
+                                                outer.gst) /
+                                                100
+                                          );
+                                        }
+
+                                        if (
+                                          "4-1-1-1" === req.query.code &&
+                                          req.query.edate > v.generatedOn &&
+                                          req.query.sdate < v.generatedOn
+                                        ) {
+                                          if (outer.type !== "Sale") {
+                                            let remarks =
+                                              "To Record Sale of Fabric " +
+                                              "party" +
+                                              outer.party.head_of_ac +
+                                              ".";
+                                            fabric_arr.push({
+                                              record_no: v.record_no,
+                                              details: outer,
+                                              record_type: "Fabic Sale",
+                                              remarks: remarks,
+                                              party_name:
+                                                outer.party.head_of_ac,
                                               date: v.generatedOn,
                                               balance: startingBalance,
                                               op_bal: current_op_bal
                                             });
                                             console.log("h", fabric_arr);
                                             credit += parseInt(
-                                              inner.weight * inner.rate +
-                                                (inner.weight *
-                                                  inner.rate *
-                                                  inner.gst) /
-                                                  100
+                                              outer.meter * outer.rate
                                             );
                                           }
+                                        } else if (
+                                          req.query.sdate > v.generatedOn &&
+                                          req.query.code === "4-1-1-1"
+                                        ) {
+                                          credit += parseInt(
+                                            outer.meter * outer.rate
+                                          );
+                                          current_op_bal -= parseInt(
+                                            outer.meter * outer.rate
+                                          );
                                         }
                                       });
                                     });
-                                    console.log("arr", fabric_arr);
+                                    // console.log("arr", fabric_arr);
 
                                     // _________________________________________________________
                                     if (req.query.onlyBalanceDetails) {
