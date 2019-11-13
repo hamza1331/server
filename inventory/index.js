@@ -742,7 +742,9 @@ router.post("/editFabricQuality", (req, res) => {
     ends,
     picks,
     width,
-    quality_name
+    quality_name,
+    weft_consumption,
+    warp_consumption
   } = req.body;
   FabricQuality.findOne({ _id: _id }, function(err, data) {
     data.warp_count = warp_count;
@@ -750,6 +752,8 @@ router.post("/editFabricQuality", (req, res) => {
     data.ends = ends;
     data.picks = picks;
     data.width = width;
+    data.weft_consumption = weft_consumption;
+    data.warp_consumption = warp_consumption;
     data.quality_name = quality_name;
     data.save();
     res.json(data);

@@ -20,6 +20,12 @@ const fabricQuality = new mongoose.Schema({
   width: {
     type: Number
   },
+   weft_consumption: {
+    type: Number
+  },
+  warp_consumption: {
+    type: Number
+  },
   quality_name: {
     type: String,
     default: ""
