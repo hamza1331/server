@@ -2,13 +2,59 @@ const mongoose = require("mongoose");
 // const validator = require("validator");
 const Schema = mongoose.Schema;
 
-const beamArr = new mongoose.Schema({
+const beamArrInner = new mongoose.Schema({
     beam_no: {
         type: Number
     },
     beam_length: {
       type: Number,
     },
+    ends: {
+      type: Number,
+    },
+    consumption: {
+      type: Number,
+    },
+    consumption_lbs: {
+      type: Number,
+    },
+    used: {
+      type: Boolean,
+      default: false
+    }
+})
+
+
+const beamArrOuter = new mongoose.Schema({
+    beam_no: {
+        type: Number
+    },
+    beam_length: {
+      type: Number,
+    },
+    ends: {
+      type: Number,
+    },
+    consumption: {
+      type: Number,
+    },
+    consumption_lbs: {
+      type: Number,
+    },
+    chartOfAccounts: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "companies",
+      required: true
+    },
+    fabric_quality: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "fabricQualitys",
+      required: true
+    },
+    weaver_charges: {
+      type: Number
+    },
+
     used: {
       type: Boolean,
       default: false
@@ -82,7 +128,8 @@ var addSizingSchema = new Schema({
   gst_total_amount: {
     type: Number
   },
-  beamArr: [beamArr],
+  beamArrInner: [beamArrInner],
+  beamArrOuter: [beamArrOuter],
   generatedOn: {
     type: Number,
     default: new Date().getTime()

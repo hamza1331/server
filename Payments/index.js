@@ -9,10 +9,10 @@ const ChecksInHands = require('../models/checkInHand')
 
 router.use(fileUpload());
 
-router.post('/upload', (req, res, err) => {
+router.post('/upload', (req, res) => {
     // adds files to public folder
     let _id = req.query._id;
-    console.log('err', err, req.files)
+    console.log('err', _id)
 
     if (req.files === null) {
         return res.status(400).json({ msg: 'No file uploaded' });
@@ -27,11 +27,13 @@ router.post('/upload', (req, res, err) => {
         }
 
         Payments.findById(_id, (err, data) => {
-            data.filePath = "public/" + file.name;
-            data.save()
+            data.filePath = file.name;
+            console.log('success', data.filePath)
+            data.save().then((data) => {
+              res.json(data);
+              console.log(data)
+            }).catch(err => console.log(err))
         })
-
-        res.json({ fileName: file.name, filePath: `/uploads/${file.name}` });
     });
 });
 
@@ -51,7 +53,7 @@ router.get('/getPaymentInfo', (req, res) => {
 
 router.post('/addPayments', (req, res) => {
     console.log('Add Payments')
-        // adds new data and increments record nos 
+        // adds new data and increments record nos
     const Payment = new Payments(req.body);
     Info.findByIdAndUpdate("5d6a2eeef7935f12787d9cc6", {
         $inc: {

@@ -50,7 +50,9 @@ var PaymentsSchema = new mongoose.Schema({
         type: Number,
         default: new Date().getTime()
     },
-    filePath: String
+    filePath: {
+        type: String,
+    }
 });
 
 const Payments = mongoose.model('payments', PaymentsSchema);

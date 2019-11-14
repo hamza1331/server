@@ -26,7 +26,7 @@ router.post('/upload', (req, res, err) => {
         }
 
         Reciepts.findById(_id, (err, data) => {
-            data.filePath = "/public/" + file.name;
+          data.filePath = file.name;
             data.save()
         })
 
@@ -35,7 +35,7 @@ router.post('/upload', (req, res, err) => {
 });
 
 router.get('/getRecieptInfo', (req, res) => {
-    // gets cuurrent record no 
+    // gets cuurrent record no
     Info.find({}, 'reciept_info').exec(function (err, data) {
         console.log('data', data)
         res.json(data);

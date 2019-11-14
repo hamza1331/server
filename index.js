@@ -15,8 +15,9 @@ const Info = require('./models/globalInfo');
 
 
 app.get('/getPdf', function (req, res) {
-  var filePath = "/public/book.pdf";
 
+  var filePath = "/public/"+req.query.filePath;
+console.log(filePath)
   fs.readFile(__dirname + filePath, function (err, data) {
     res.contentType("application/pdf");
     res.send(data);

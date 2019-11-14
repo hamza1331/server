@@ -46,7 +46,7 @@ router.get('/getJJournals', (req, res) => {
     // gets jjounals
     let date = req.query.date;
     console.log('params / update', date)
-    // let query = 
+    // let query =
 
     JJournals.find({ date: date }, (err, data) => {
 
@@ -93,7 +93,7 @@ router.post('/upload', (req, res, err) => {
         }
 
         JJournals.findById(_id, (err, data) => {
-            data.filePath = "/public/" + file.name;
+          data.filePath = file.name;
             data.save()
         })
 
@@ -137,7 +137,7 @@ router.get('/getJJournalByRoundNo', (req, res) => {
     // get data by round no
     let record_no = req.query.record_no;
     console.log('params / uprecord_no', record_no)
-    // let query = 
+    // let query =
 
     JJournals.findOne({ record_no: record_no }, (err, data) => {
 
@@ -157,7 +157,7 @@ router.get('/getJournalById', (req, res) => {
     // /gets data by _id
     let id = req.query.id;
     console.log('params / uprecord_no', id)
-    // let query = 
+    // let query =
 
     JJournals.findById(id).
     populate("recordArr.particulars").
